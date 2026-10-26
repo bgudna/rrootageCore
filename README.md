@@ -1,6 +1,6 @@
 # rRootage
 
-for Windows98 or later (OpenGL required)
+for macOS, Linux, Windows98 or later (OpenGL required)
 
 ver. 0.24
 
@@ -9,13 +9,15 @@ Shootem up game, 'rRootage'.
 
 ![screenshot](http://www.asahi-net.or.jp/~cs8k-cyu/windows/rr_1.gif)
 
-### How to install.
+### Windows pre-built releases.
 
 [Download: rr0_24.zip](http://abagames.sakura.ne.jp/windows/rr0_24.zip)
 
 [Download: rr0_23.zip](http://abagames.sakura.ne.jp/windows/rr0_23.zip) (for Win9x users)
 
 Unpack rr0_24.zip, and execute 'rr.exe'.
+
+Compile your own version, see below.
 
 ### How to play.
 
@@ -92,6 +94,8 @@ These options are available:
 
 ### How to build
 
+#### Windows
+
 1. Install [MSYS2](http://www.msys2.org/).
 
 1. Open mingw32.exe.
@@ -147,6 +151,10 @@ If you want to build rRootage in Visual Studio, you can use [the cmake branch](h
 [Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html) to create the random number.
 
 ### History
+
+2026 10/26 ver. 024b
+
+- Update to SDL2
 
 2018 1/15 ver. 0.24
 
