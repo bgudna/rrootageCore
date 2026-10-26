@@ -102,7 +102,7 @@ These options are available:
    $ pacman -S base-devel mingw-w64-i686-toolchain
    ```
 
-1. Install [SDL-devel-1.2.15-mingw32.tar.gz (SDL1.2 Development Libraries for Mingw32)](https://www.libsdl.org/download-1.2.php).
+1. Install SDL2 and SDL2_mixer for MinGW (e.g. `pacman -S mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_mixer`).
 
 1. Clone or download this repository.
 
@@ -113,6 +113,14 @@ These options are available:
    ```
    $ make
    ```
+
+#### macOS
+
+1. Install the Xcode command line tools and SDL2: `brew install sdl2 sdl2_mixer`.
+
+1. Build [libBulletML 0.0.6](http://shinh.skr.jp/libbulletml/index_en.html) for macOS and save the archive as `src/libbulletml_macos.a` (the bundled `libbulletml.a` is a Windows archive).
+
+1. In the src directory, run `make -f Makefile.macos`, then run `./rr` from the repository root.
 
 If you want to build rRootage in Visual Studio, you can use [the cmake branch](https://github.com/abagames/rrootage/tree/cmake). Details are given in [PR #8](https://github.com/abagames/rrootage/pull/8).
 

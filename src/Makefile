@@ -10,8 +10,8 @@ CXX    = g++
 
 PROG   = $(NAME).exe
 
-DEFAULT_CFLAGS = `sdl-config --cflags`
-LDFLAGS        = -static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive -lglu32 -lopengl32 -lmingw32 -L/usr/lib -lSDLmain -L. -lbulletml -Wl,-Bdynamic -L.. -lSDL -lSDL_mixer -mwindows
+DEFAULT_CFLAGS = `sdl2-config --cflags`
+LDFLAGS        = -static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive -lglu32 -lopengl32 -lmingw32 -L/usr/lib -lSDL2main -L. -lbulletml -Wl,-Bdynamic -L.. -lSDL2 -lSDL2_mixer -mwindows
 
 MORE_CFLAGS = -O2 -Wall
 

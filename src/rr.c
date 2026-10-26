@@ -237,6 +237,7 @@ int main(int argc, char *argv[]) {
   long prvTickCount = 0;
   int i;
   SDL_Event event;
+  int numKeys;
   long nowTick;
   int frame;
   int buttons;
@@ -250,10 +251,18 @@ int main(int argc, char *argv[]) {
   initTitle();
 
   while ( !done ) {
-    SDL_PollEvent(&event);
-    keys = SDL_GetKeyState(NULL);
+    while ( SDL_PollEvent(&event) ) {
+      if ( event.type == SDL_QUIT ) done = 1;
+      if ( event.type == SDL_WINDOWEVENT &&
+           event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ) {
+        int w, h;
+        SDL_GL_GetDrawableSize(window, &w, &h);
+        resized(w, h);
+      }
+    }
+    keys = SDL_GetKeyboardState(&numKeys);
     buttons = getButtonState();
-    if ( keys[SDLK_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT ) done = 1;
+    if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) done = 1;
     if ( buttons & PAD_BUTTONP ) {
       if ( !pPrsd ) {
 	if ( status == IN_GAME ) {
@@ -265,9 +274,6 @@ int main(int argc, char *argv[]) {
       pPrsd = 1;
     } else {
       pPrsd = 0;
-    }
-    if ( event.type == SDL_VIDEORESIZE ) {
-      resized(event.resize.w, event.resize.h);
     }
 
     nowTick = SDL_GetTicks();

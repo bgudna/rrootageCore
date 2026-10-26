@@ -11,8 +11,13 @@
  */
 #include "SDL.h"
 
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 
 #define PAD_UP 1
 #define PAD_DOWN 2
@@ -27,7 +32,8 @@
 extern float eyeX, eyeY, eyeZ;
 extern float pitch, roll;
 extern float zoom;
-extern Uint8 *keys;
+extern const Uint8 *keys;
+extern SDL_Window *window;
 extern SDL_Joystick *stick;
 extern int buttonReversed;
 extern int lowres;

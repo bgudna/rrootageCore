@@ -1,0 +1,39 @@
+# rRootage makefile for macOS
+# Requires: Xcode command line tools, Homebrew `sdl2` and `sdl2_mixer`.
+# Also requires a macOS build of libbulletml (see BULLETML_LIB below);
+# the bundled libbulletml.a is a Windows archive and cannot be linked here.
+#
+#   brew install sdl2 sdl2_mixer
+#   make -f Makefile.macos
+
+NAME   = rr
+O      = o
+RM     = rm -f
+CC     = clang
+CXX    = clang++
+
+PROG   = $(NAME)
+
+# Path to a libbulletml.a built for macOS (libbulletml 0.0.6, includes tinyxml).
+BULLETML_LIB = ./libbulletml_macos.a
+
+DEFAULT_CFLAGS = $(shell sdl2-config --cflags)
+LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer -framework OpenGL
+
+MORE_CFLAGS = -O2 -Wall -Wno-deprecated-declarations
+
+CFLAGS   = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CXXFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -I./bulletml/
+
+OBJS =	$(NAME).$(O) \
+	foe.$(O) foecommand.$(O) barragemanager.$(O) boss.$(O) ship.$(O) laser.$(O) \
+	frag.$(O) background.$(O) letterrender.$(O) shot.$(O) \
+	screen.$(O) vector.$(O) degutil.$(O) rand.$(O) mt19937int.$(O) \
+	soundmanager.$(O) attractmanager.$(O)
+
+$(PROG): $(OBJS)
+	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
+	mv $(PROG) ..
+
+clean:
+	$(RM) ../$(PROG) *.$(O)
