@@ -1,7 +1,6 @@
 # rRootage makefile for macOS
 # Requires: Xcode command line tools, Homebrew `sdl2` and `sdl2_mixer`.
-# Also requires a macOS build of libbulletml (see BULLETML_LIB below);
-# the bundled libbulletml.a is a Windows archive and cannot be linked here.
+# libbulletml is built from source automatically.
 #
 #   brew install sdl2 sdl2_mixer
 #   make -f Makefile.macos
@@ -14,8 +13,12 @@ CXX    = clang++
 
 PROG   = $(NAME)
 
-# Path to a libbulletml.a built for macOS (libbulletml 0.0.6, includes tinyxml).
+BULLETML_VER = 0.0.6
+BULLETML_URL = http://shinh.skr.jp/libbulletml/libbulletml-$(BULLETML_VER).tar.bz2
 BULLETML_LIB = ./libbulletml_macos.a
+BULLETML_SRC = bulletml_build/bulletml/src
+BULLETML_SRCS = bulletmlparser-tinyxml bulletmlparser bulletmltree calc formula-variables \
+	bulletmlrunner bulletmlrunnerimpl tinyxml/tinyxml tinyxml/tinyxmlparser tinyxml/tinyxmlerror
 
 DEFAULT_CFLAGS = $(shell sdl2-config --cflags)
 LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer -framework OpenGL
@@ -31,9 +34,18 @@ OBJS =	$(NAME).$(O) \
 	screen.$(O) vector.$(O) degutil.$(O) rand.$(O) mt19937int.$(O) \
 	soundmanager.$(O) attractmanager.$(O)
 
-$(PROG): $(OBJS)
+$(PROG): $(OBJS) $(BULLETML_LIB)
 	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
 	mv $(PROG) ..
 
+$(BULLETML_LIB):
+	mkdir -p bulletml_build
+	curl -L -o bulletml_build/libbulletml.tar.bz2 $(BULLETML_URL)
+	tar xjf bulletml_build/libbulletml.tar.bz2 -C bulletml_build
+	cd $(BULLETML_SRC) && for f in $(BULLETML_SRCS); do \
+	  $(CXX) -std=c++98 -O2 -w -include cstring -include cstdlib -I. -c $$f.cpp -o $$(basename $$f).o || exit 1; done
+	$(AR) rcs $(BULLETML_LIB) $(BULLETML_SRC)/*.o
+
 clean:
 	$(RM) ../$(PROG) *.$(O)
+	rm -rf bulletml_build $(BULLETML_LIB)
