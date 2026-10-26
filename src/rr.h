@@ -27,5 +27,5 @@ extern int tick;
 void quitLast();
 void initTitleStage(int stg);
 void initTitle();
-void initGame();
+void initGame(int stg);
 void initGameover();

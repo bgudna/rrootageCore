@@ -40,7 +40,7 @@ int extendShip();
 int decrementShip();
 void addLeftBonus();
 void setClearScore();
-void setHiScore();
+void setHiScore(int cleard);
 void showScore();
 void drawScore();
 void drawRPanel();
