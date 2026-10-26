@@ -187,6 +187,35 @@ void closeSDL() {
   SDL_ShowCursor(SDL_ENABLE);
 }
 
+void toggleFullscreen() {
+  if ( window == NULL ) return;
+  
+  Uint32 flags = SDL_GetWindowFlags(window);
+  
+  if ( flags & SDL_WINDOW_FULLSCREEN_DESKTOP ) {
+    SDL_SetWindowFullscreen(window, 0);
+    windowMode = 1;
+  } else if ( flags & SDL_WINDOW_FULLSCREEN ) {
+    SDL_SetWindowFullscreen(window, 0);
+    windowMode = 1;
+  } else {
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    windowMode = 0;
+  }
+}
+
+void doubleWindowSize() {
+  if ( window == NULL || !windowMode ) return;
+  
+  int currentWidth, currentHeight;
+  SDL_GetWindowSize(window, &currentWidth, &currentHeight);
+  
+  int newWidth = currentWidth * 2;
+  int newHeight = currentHeight * 2;
+  
+  SDL_SetWindowSize(window, newWidth, newHeight);
+}
+
 float zoom = 15;
 static int screenShakeCnt = 0;
 static int screenShakeType = 0;

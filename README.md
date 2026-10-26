@@ -9,16 +9,6 @@ Shootem up game, 'rRootage'.
 
 ![screenshot](http://www.asahi-net.or.jp/~cs8k-cyu/windows/rr_1.gif)
 
-### Windows pre-built releases.
-
-[Download: rr0_24.zip](http://abagames.sakura.ne.jp/windows/rr0_24.zip)
-
-[Download: rr0_23.zip](http://abagames.sakura.ne.jp/windows/rr0_23.zip) (for Win9x users)
-
-Unpack rr0_24.zip, and execute 'rr.exe'.
-
-Compile your own version, see below.
-
 ### How to play.
 
 - Movement Arrow key / Joystick
@@ -26,6 +16,8 @@ Compile your own version, see below.
 - Special [X] / Trigger 2, Trigger 3
 - Pause [P] / Trigger 5,6,7,8,9
 - Quit [Esc]
+- Ctrl/CMD + 2 / Double the window size
+- Ctrl/CMD + f / Go full screen
 
 Select the stage by a keyboard or a joystick.
 Press a laser key to start the game.

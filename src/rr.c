@@ -259,6 +259,23 @@ int main(int argc, char *argv[]) {
         SDL_GL_GetDrawableSize(window, &w, &h);
         resized(w, h);
       }
+      // Handle hotkeys
+      if ( event.type == SDL_KEYDOWN ) {
+        int modKey;
+#ifdef __APPLE__
+        modKey = KMOD_GUI;
+#else
+        modKey = KMOD_CTRL;
+#endif
+        // Cmd/Ctrl+2 to double window size
+        if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_2 ) {
+          doubleWindowSize();
+        }
+        // Cmd/Ctrl+F for fullscreen
+        if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_F ) {
+          toggleFullscreen();
+        }
+      }
     }
     keys = SDL_GetKeyboardState(&numKeys);
     buttons = getButtonState();

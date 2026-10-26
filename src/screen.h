@@ -49,6 +49,8 @@ void generateTexture(GLuint*);
 void deleteTexture(GLuint*);
 void initSDL();
 void closeSDL();
+void toggleFullscreen();
+void doubleWindowSize();
 void resized(int, int);
 void drawGLSceneStart();
 void drawGLSceneEnd();
