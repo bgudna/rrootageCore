@@ -44,7 +44,7 @@ $(BULLETML_LIB):
 	curl -L -o bulletml_build/libbulletml.tar.bz2 $(BULLETML_URL)
 	tar xjf bulletml_build/libbulletml.tar.bz2 -C bulletml_build
 	cd $(BULLETML_SRC) && for f in $(BULLETML_SRCS); do \
-	  $(CXX) -std=c++98 -O2 -w -I. -c $$f.cpp -o $$(basename $$f).o || exit 1; done
+	  $(CXX) -std=c++98 -O2 -w -include cstring -include cstdlib -I. -c $$f.cpp -o $$(basename $$f).o || exit 1; done
 	$(AR) rcs $(BULLETML_LIB) $(BULLETML_SRC)/*.o
 
 clean:
