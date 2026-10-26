@@ -1,0 +1,52 @@
+# rRootage makefile for Linux
+# Requires SDL2, SDL2_mixer, GLU and a C/C++ toolchain, e.g. on Debian/Ubuntu:
+#   sudo apt install build-essential curl bzip2 libsdl2-dev libsdl2-mixer-dev libglu1-mesa-dev
+#
+# The bundled libbulletml.a is a Windows archive, so libbulletml is built
+# from source the first time:
+#   make -f Makefile.linux
+
+NAME   = rr
+O      = o
+RM     = rm -f
+CC     = gcc
+CXX    = g++
+
+PROG   = $(NAME)
+
+BULLETML_VER = 0.0.6
+BULLETML_URL = http://shinh.skr.jp/libbulletml/libbulletml-$(BULLETML_VER).tar.bz2
+BULLETML_LIB = ./libbulletml_linux.a
+BULLETML_SRC = bulletml_build/bulletml/src
+BULLETML_SRCS = bulletmlparser-tinyxml bulletmlparser bulletmltree calc formula-variables \
+	bulletmlrunner bulletmlrunnerimpl tinyxml/tinyxml tinyxml/tinyxmlparser tinyxml/tinyxmlerror
+
+DEFAULT_CFLAGS = $(shell sdl2-config --cflags)
+LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer -lGLU -lGL
+
+MORE_CFLAGS = -O2 -Wall
+
+CFLAGS   = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CXXFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -I./bulletml/
+
+OBJS =	$(NAME).$(O) \
+	foe.$(O) foecommand.$(O) barragemanager.$(O) boss.$(O) ship.$(O) laser.$(O) \
+	frag.$(O) background.$(O) letterrender.$(O) shot.$(O) \
+	screen.$(O) vector.$(O) degutil.$(O) rand.$(O) mt19937int.$(O) \
+	soundmanager.$(O) attractmanager.$(O)
+
+$(PROG): $(OBJS) $(BULLETML_LIB)
+	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
+	mv $(PROG) ..
+
+$(BULLETML_LIB):
+	mkdir -p bulletml_build
+	curl -L -o bulletml_build/libbulletml.tar.bz2 $(BULLETML_URL)
+	tar xjf bulletml_build/libbulletml.tar.bz2 -C bulletml_build
+	cd $(BULLETML_SRC) && for f in $(BULLETML_SRCS); do \
+	  $(CXX) -std=c++98 -O2 -w -I. -c $$f.cpp -o $$(basename $$f).o || exit 1; done
+	$(AR) rcs $(BULLETML_LIB) $(BULLETML_SRC)/*.o
+
+clean:
+	$(RM) ../$(PROG) *.$(O)
+	rm -rf bulletml_build $(BULLETML_LIB)

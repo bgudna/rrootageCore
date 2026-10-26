@@ -122,6 +122,14 @@ These options are available:
 
 1. In the src directory, run `make -f Makefile.macos`, then run `./rr` from the repository root.
 
+#### Linux
+
+1. Install the dependencies (Debian/Ubuntu shown): `sudo apt install build-essential curl bzip2 libsdl2-dev libsdl2-mixer-dev libglu1-mesa-dev`.
+
+1. In the src directory, run `make -f Makefile.linux`. The first run downloads and builds libBulletML 0.0.6.
+
+1. Run `./rr` from the repository root.
+
 If you want to build rRootage in Visual Studio, you can use [the cmake branch](https://github.com/abagames/rrootage/tree/cmake). Details are given in [PR #8](https://github.com/abagames/rrootage/pull/8).
 
 ### Webpage
