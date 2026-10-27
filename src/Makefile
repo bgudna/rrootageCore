@@ -27,10 +27,11 @@ OBJS =	$(NAME).$(O) \
 
 $(PROG): $(OBJS) 
 	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
-	mv $(PROG) ..
+	mkdir -p ../bin
+	mv $(PROG) ../bin
 
 $(NAME)_res.o: $(NAME).rc
 	windres -i $(NAME).rc -o $(NAME)_res.o
 
 clean:
-	$(RM) ../$(PROG) *.$(O)
+	$(RM) ../bin/$(PROG) *.$(O)

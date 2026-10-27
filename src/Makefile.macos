@@ -36,7 +36,8 @@ OBJS =	$(NAME).$(O) \
 
 $(PROG): $(OBJS) $(BULLETML_LIB)
 	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
-	mv $(PROG) ..
+	mkdir -p ../bin
+	mv $(PROG) ../bin
 
 $(BULLETML_LIB):
 	mkdir -p bulletml_build
@@ -47,5 +48,5 @@ $(BULLETML_LIB):
 	$(AR) rcs $(BULLETML_LIB) $(BULLETML_SRC)/*.o
 
 clean:
-	$(RM) ../$(PROG) *.$(O)
+	$(RM) ../bin/$(PROG) *.$(O)
 	rm -rf bulletml_build $(BULLETML_LIB)

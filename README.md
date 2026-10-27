@@ -117,7 +117,7 @@ These options are available:
 
 1. Build [libBulletML 0.0.6](http://shinh.skr.jp/libbulletml/index_en.html) for macOS and save the archive as `src/libbulletml_macos.a` (the bundled `libbulletml.a` is a Windows archive).
 
-1. In the src directory, run `make -f Makefile.macos`, then run `./rr` from the repository root.
+1. In the src directory, run `make -f Makefile.macos`, then run `./bin/rr` from the repository root.
 
 #### Linux
 
@@ -125,7 +125,7 @@ These options are available:
 
 1. In the src directory, run `make -f Makefile.linux`. The first run downloads and builds libBulletML 0.0.6.
 
-1. Run `./rr` from the repository root.
+1. Run `./bin/rr` from the repository root.
 
 If you want to build rRootage in Visual Studio, you can use [the cmake branch](https://github.com/abagames/rrootage/tree/cmake). Details are given in [PR #8](https://github.com/abagames/rrootage/pull/8).
 
