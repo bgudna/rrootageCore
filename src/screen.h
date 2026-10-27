@@ -51,6 +51,7 @@ void initSDL();
 void closeSDL();
 void toggleFullscreen();
 void doubleWindowSize();
+void resetWindowSize();
 void resized(int, int);
 void drawGLSceneStart();
 void drawGLSceneEnd();

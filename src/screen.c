@@ -165,6 +165,9 @@ void initSDL() {
   }
   SDL_GL_GetDrawableSize(window, &screenWidth, &screenHeight);
 
+  // The game only reads raw key state; text input events and the OS input method aren't needed.
+  SDL_StopTextInput();
+
   stick = SDL_JoystickOpen(0);
 
   initGL();
@@ -214,6 +217,17 @@ void doubleWindowSize() {
   int newHeight = currentHeight * 2;
   
   SDL_SetWindowSize(window, newWidth, newHeight);
+}
+
+// Restore the window to its initial size.
+void resetWindowSize() {
+  if ( window == NULL || !windowMode ) return;
+
+  if ( lowres ) {
+    SDL_SetWindowSize(window, LOWRES_SCREEN_WIDTH, LOWRES_SCREEN_HEIGHT);
+  } else {
+    SDL_SetWindowSize(window, SCREEN_WIDTH, SCREEN_HEIGHT);
+  }
 }
 
 float zoom = 15;

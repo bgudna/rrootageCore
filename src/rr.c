@@ -274,6 +274,10 @@ int main(int argc, char *argv[]) {
 #else
         modKey = KMOD_CTRL;
 #endif
+        // Cmd/Ctrl+1 to restore the initial window size
+        if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_1 ) {
+          resetWindowSize();
+        }
         // Cmd/Ctrl+2 to double window size
         if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_2 ) {
           doubleWindowSize();
