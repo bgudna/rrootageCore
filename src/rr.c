@@ -228,6 +228,13 @@ static void parseArgs(int argc, char *argv[]) {
   }
 }
 
+// Ctrl+Q quits everywhere; Cmd+Q also quits on macOS.
+#ifdef __APPLE__
+#define QUIT_MOD (KMOD_CTRL | KMOD_GUI)
+#else
+#define QUIT_MOD KMOD_CTRL
+#endif
+
 int interval = INTERVAL_BASE;
 int tick = 0;
 static int pPrsd = 1;
@@ -280,6 +287,7 @@ int main(int argc, char *argv[]) {
     keys = SDL_GetKeyboardState(&numKeys);
     buttons = getButtonState();
     if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) done = 1;
+    if ( keys[SDL_SCANCODE_Q] == SDL_PRESSED && (SDL_GetModState() & QUIT_MOD) ) done = 1;
     if ( buttons & PAD_BUTTONP ) {
       if ( !pPrsd ) {
 	if ( status == IN_GAME ) {

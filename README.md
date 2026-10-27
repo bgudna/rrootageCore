@@ -2,7 +2,7 @@
 
 for macOS, Linux, Windows98 or later (OpenGL required)
 
-ver. 0.24
+ver. 0.24b
 
 Defeat autocreated huge battleships.
 Shootem up game, 'rRootage'.
@@ -15,15 +15,15 @@ Shootem up game, 'rRootage'.
 - Laser [Z] / Trigger 1, Trigger 4
 - Special [X] / Trigger 2, Trigger 3
 - Pause [P] / Trigger 5,6,7,8,9
-- Quit [Esc]
+- Quit [Esc] / Ctrl/CMD + q
 - Ctrl/CMD + 2 / Double the window size
 - Ctrl/CMD + f / Go full screen
 
 Select the stage by a keyboard or a joystick.
-Press a laser key to start the game.
+Press a laser key or [Enter] to start the game.
 
 You can also select the game mode from 4 types.
-Press a special key to change the game mode.
+Press a special key or [Tab] to change the game mode.
 
 #### Normal mode
 
@@ -147,6 +147,9 @@ If you want to build rRootage in Visual Studio, you can use [the cmake branch](h
 2026 10/26 ver. 024b
 
 - Update to SDL2
+- Add macOS and Linux builds.
+- Add Ctrl/CMD + q to quit.
+- Add Enter to start a stage and Tab to change the game mode on the title screen.
 
 2018 1/15 ver. 0.24
 

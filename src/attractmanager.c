@@ -284,6 +284,8 @@ int initTitleAtr() {
 void moveTitleMenu() {
   int pad = getPadState();
   int btn = getButtonState();
+  int enter = (keys[SDL_SCANCODE_RETURN] == SDL_PRESSED || keys[SDL_SCANCODE_KP_ENTER] == SDL_PRESSED);
+  int tab = (keys[SDL_SCANCODE_TAB] == SDL_PRESSED);
   int bs = slcStg;
   if ( pad & PAD_DOWN ) {
     if ( mnp ) {
@@ -316,7 +318,7 @@ void moveTitleMenu() {
 	slcStg--;
       }
     }
-  } else if ( btn == 0 ) {
+  } else if ( btn == 0 && !enter && !tab ) {
     mnp = 1;
   }
   if ( slcStg != bs ) {
@@ -324,7 +326,7 @@ void moveTitleMenu() {
     initTitleStage(slcStg);
     titleCnt = 0;
   }
-  if ( mnp && (btn & PAD_BUTTON1) ) {
+  if ( mnp && ((btn & PAD_BUTTON1) || enter) ) {
     if ( slcStg == QUIT_STAGE_NUM  ) {
       quitLast();
     } else if ( slcStg < 0 ) {
@@ -335,7 +337,7 @@ void moveTitleMenu() {
       initGame(slcStg);
     }
   }
-  if ( mnp && (btn & PAD_BUTTON2) ) {
+  if ( mnp && ((btn & PAD_BUTTON2) || tab) ) {
     mnp = 0;
     setMode((mode+1)%MODE_NUM);
     initTitleStage(slcStg);
