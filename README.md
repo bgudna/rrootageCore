@@ -11,8 +11,8 @@ Shootem up game, 'rRootage'.
 
 ### How to play.
 
-- Movement Arrow key / Joystick
-- Laser [Z] / Trigger 1, Trigger 4
+- Movement Arrow key, [W][A][S][D] / Joystick
+- Laser [Z], [Space] / Trigger 1, Trigger 4
 - Special [X] / Trigger 2, Trigger 3
 - Pause [P] / Trigger 5,6,7,8,9
 - Quit [Esc] / Ctrl/CMD + q
@@ -149,6 +149,7 @@ If you want to build rRootage in Visual Studio, you can use [the cmake branch](h
 
 - Update to SDL2
 - Add macOS and Linux builds.
+- Add WASD movement and Space to shoot.
 - Add Ctrl/CMD + q to quit.
 - Add Ctrl/CMD + 1 to reset the window size.
 - Add Enter to start a stage and Tab to change the game mode on the title screen.

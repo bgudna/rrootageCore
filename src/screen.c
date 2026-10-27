@@ -1002,16 +1002,16 @@ int getPadState() {
       hat = SDL_JoystickGetHat(stick, 0);
     }
   }
-  if ( keys[SDL_SCANCODE_RIGHT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_6] == SDL_PRESSED || x > JOYSTICK_AXIS || (hat & SDL_HAT_RIGHT)) {
+  if ( keys[SDL_SCANCODE_RIGHT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_6] == SDL_PRESSED || keys[SDL_SCANCODE_D] == SDL_PRESSED || x > JOYSTICK_AXIS || (hat & SDL_HAT_RIGHT)) {
     pad |= PAD_RIGHT;
   }
-  if ( keys[SDL_SCANCODE_LEFT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_4] == SDL_PRESSED || x < -JOYSTICK_AXIS || (hat & SDL_HAT_LEFT)) {
+  if ( keys[SDL_SCANCODE_LEFT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_4] == SDL_PRESSED || keys[SDL_SCANCODE_A] == SDL_PRESSED || x < -JOYSTICK_AXIS || (hat & SDL_HAT_LEFT)) {
     pad |= PAD_LEFT;
   }
-  if ( keys[SDL_SCANCODE_DOWN] == SDL_PRESSED || keys[SDL_SCANCODE_KP_2] == SDL_PRESSED || y > JOYSTICK_AXIS || (hat & SDL_HAT_DOWN)) {
+  if ( keys[SDL_SCANCODE_DOWN] == SDL_PRESSED || keys[SDL_SCANCODE_KP_2] == SDL_PRESSED || keys[SDL_SCANCODE_S] == SDL_PRESSED || y > JOYSTICK_AXIS || (hat & SDL_HAT_DOWN)) {
     pad |= PAD_DOWN;
   }
-  if ( keys[SDL_SCANCODE_UP] == SDL_PRESSED ||  keys[SDL_SCANCODE_KP_8] == SDL_PRESSED || y < -JOYSTICK_AXIS || (hat & SDL_HAT_UP)) {
+  if ( keys[SDL_SCANCODE_UP] == SDL_PRESSED ||  keys[SDL_SCANCODE_KP_8] == SDL_PRESSED || keys[SDL_SCANCODE_W] == SDL_PRESSED || y < -JOYSTICK_AXIS || (hat & SDL_HAT_UP)) {
     pad |= PAD_UP;
   }
   return pad;
@@ -1034,7 +1034,7 @@ int getButtonState() {
     btn8 = SDL_JoystickGetButton(stick, 7);
     btn9 = SDL_JoystickGetButton(stick, 9);
   }
-  if ( keys[SDL_SCANCODE_Z] == SDL_PRESSED || btn1 || btn4 ) {
+  if ( keys[SDL_SCANCODE_Z] == SDL_PRESSED || keys[SDL_SCANCODE_SPACE] == SDL_PRESSED || btn1 || btn4 ) {
     if ( !buttonReversed ) {
       btn |= PAD_BUTTON1;
     } else {
