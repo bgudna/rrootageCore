@@ -18,12 +18,20 @@ MORE_CFLAGS = -O2 -Wall
 CFLAGS   = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 CXXFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -I./bulletml/
 
+# Asset pack (rr.dat), loaded by the game from the directory of the executable.
+PACKER     = packer.exe
+PACK       = ../bin/$(NAME).dat
+ASSET_DIRS = images sounds normal reversible morph simple morph_heavy psy
+ASSETS     = $(wildcard $(addprefix ../,$(addsuffix /*,$(ASSET_DIRS))))
+
 OBJS =	$(NAME).$(O) \
 	foe.$(O) foecommand.$(O) barragemanager.$(O) boss.$(O) ship.$(O) laser.$(O) \
 	frag.$(O) background.$(O) letterrender.$(O) shot.$(O) \
 	screen.$(O) vector.$(O) degutil.$(O) rand.$(O) mt19937int.$(O) \
-	soundmanager.$(O) attractmanager.$(O) \
+	soundmanager.$(O) attractmanager.$(O) pack.$(O) \
 	$(NAME)_res.$(O)
+
+all: $(PROG) $(PACK)
 
 $(PROG): $(OBJS) 
 	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
@@ -33,5 +41,14 @@ $(PROG): $(OBJS)
 $(NAME)_res.o: $(NAME).rc
 	windres -i $(NAME).rc -o $(NAME)_res.o
 
+$(PACKER): packer.c
+	$(CC) -O2 -Wall -o $(PACKER) packer.c
+
+$(PACK): $(PACKER) $(ASSETS)
+	mkdir -p ../bin
+	cd .. && src/$(PACKER) bin/$(NAME).dat $(ASSET_DIRS)
+
+.PHONY: all clean
+
 clean:
-	$(RM) ../bin/$(PROG) *.$(O)
+	$(RM) ../bin/$(PROG) $(PACK) $(PACKER) *.$(O)

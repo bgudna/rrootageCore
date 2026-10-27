@@ -29,6 +29,7 @@
 #include "background.h"
 #include "soundmanager.h"
 #include "attractmanager.h"
+#include "pack.h"
 
 static int noSound = 0;
 
@@ -253,6 +254,7 @@ int main(int argc, char *argv[]) {
   parseArgs(argc, argv);
 
   initDegutil();
+  if ( !packOpen() ) exit(1);
   initSDL();
   initFirst();
   initTitle();

@@ -11,8 +11,7 @@
  */
 extern "C" {
 #include "SDL.h"
-#include <sys/types.h>
-#include <dirent.h>
+#include "pack.h"
 #include "genmcr.h"
 #include "brgmng_mtd.h"
 }
@@ -26,26 +25,39 @@ static const char *BARRAGE_DIR_NAME[BARRAGE_TYPE_NUM] = {
   "normal", "reversible", "morph", "simple", "morph_heavy", "psy",
 };
 
+// Parses a BulletML file stored in the asset pack.
+class PackBulletMLParser : public BulletMLParserTinyXML {
+public:
+  PackBulletMLParser(const std::string& name) : BulletMLParserTinyXML(name), name_(name) {}
+  virtual void parse() {
+    size_t size;
+    const void *data = packGet(name_.c_str(), &size);
+    if ( data == NULL ) {
+      fprintf(stderr, "Can't find barrage: %s\n", name_.c_str());
+      exit(1);
+    }
+    // TinyXML needs a NUL-terminated string.
+    std::string xml((const char *)data, size);
+    TiXmlDocument doc;
+    doc.Parse(xml.c_str());
+    if ( doc.Error() ) {
+      fprintf(stderr, "Can't parse barrage: %s\n", name_.c_str());
+      exit(1);
+    }
+    parseImpl(doc);
+  }
+private:
+  std::string name_;
+};
+
 static int readBulletMLFiles(const char *dirPath, Barrage brg[]) {
-  DIR *dp;
-  struct dirent *dir;
-  int i = 0;
-  char fileName[256];
-  if ( (dp = opendir(dirPath)) == NULL ) {
-    fprintf(stderr, "Can't open directory: %s\n", dirPath);
-    exit(1);
+  const char *names[BARRAGE_PATTERN_MAX];
+  int n = packList(dirPath, names, BARRAGE_PATTERN_MAX);
+  for ( int i=0 ; i<n ; i++ ) {
+    brg[i].bulletml = new PackBulletMLParser(names[i]);
+    brg[i].bulletml->build();
   }
-  while ((dir = readdir(dp)) != NULL) {
-    if ( strcmp(strrchr(dir->d_name, '.'), ".xml") != 0 ) continue; // Read .xml files.
-    strcpy(fileName, dirPath);
-    strcat(fileName, "/");
-    strncat(fileName, dir->d_name, sizeof(fileName)-strlen(fileName)-1);
-    brg[i].bulletml = new BulletMLParserTinyXML(fileName);
-    brg[i].bulletml->build(); i++;
-    printf("%s\n", fileName);
-  }
-  closedir(dp);
-  return i;
+  return n;
 }
 
 void initBarragemanager() {

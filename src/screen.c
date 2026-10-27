@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #include "SDL.h"
+#include "pack.h"
 
 #include <math.h>
 #include <string.h>
@@ -82,10 +83,10 @@ static void initGL() {
 void loadGLTexture(char *fileName, GLuint *texture) {
   SDL_Surface *surface;
 
-  char name[32];
+  char name[64];
   strcpy(name, "images/");
   strcat(name, fileName);
-  surface = SDL_LoadBMP(name);
+  surface = SDL_LoadBMP_RW(packRW(name), 1);
   if ( !surface ) {
     fprintf(stderr, "Unable to load texture: %s\n", SDL_GetError());
     SDL_Quit();

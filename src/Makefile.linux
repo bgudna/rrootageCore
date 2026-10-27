@@ -29,11 +29,19 @@ MORE_CFLAGS = -O2 -Wall
 CFLAGS   = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 CXXFLAGS = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) -I./bulletml/
 
+# Asset pack (rr.dat), loaded by the game from the directory of the executable.
+PACKER     = packer
+PACK       = ../bin/$(NAME).dat
+ASSET_DIRS = images sounds normal reversible morph simple morph_heavy psy
+ASSETS     = $(wildcard $(addprefix ../,$(addsuffix /*,$(ASSET_DIRS))))
+
 OBJS =	$(NAME).$(O) \
 	foe.$(O) foecommand.$(O) barragemanager.$(O) boss.$(O) ship.$(O) laser.$(O) \
 	frag.$(O) background.$(O) letterrender.$(O) shot.$(O) \
 	screen.$(O) vector.$(O) degutil.$(O) rand.$(O) mt19937int.$(O) \
-	soundmanager.$(O) attractmanager.$(O)
+	soundmanager.$(O) attractmanager.$(O) pack.$(O)
+
+all: $(PROG) $(PACK)
 
 $(PROG): $(OBJS) $(BULLETML_LIB)
 	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
@@ -48,6 +56,15 @@ $(BULLETML_LIB):
 	  $(CXX) -std=c++98 -O2 -w -include cstring -include cstdlib -I. -c $$f.cpp -o $$(basename $$f).o || exit 1; done
 	$(AR) rcs $(BULLETML_LIB) $(BULLETML_SRC)/*.o
 
+$(PACKER): packer.c
+	$(CC) -O2 -Wall -o $(PACKER) packer.c
+
+$(PACK): $(PACKER) $(ASSETS)
+	mkdir -p ../bin
+	cd .. && src/$(PACKER) bin/$(NAME).dat $(ASSET_DIRS)
+
+.PHONY: all clean
+
 clean:
-	$(RM) ../bin/$(PROG) *.$(O)
+	$(RM) ../bin/$(PROG) $(PACK) $(PACKER) *.$(O)
 	rm -rf bulletml_build $(BULLETML_LIB)

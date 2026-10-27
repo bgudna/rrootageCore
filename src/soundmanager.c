@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "SDL_mixer.h"
+#include "pack.h"
 #include "soundmanager.h"
 
 static int useAudio = 0;
@@ -69,12 +70,12 @@ void closeSound() {
 
 static void loadSounds() {
   int i;
-  char name[32];
+  char name[64];
 
   for ( i=0 ; i<MUSIC_NUM ; i++ ) {
     strcpy(name, "sounds/");
     strcat(name, musicFileName[i]);
-    if ( NULL == (music[i] = Mix_LoadMUS(name)) ) {
+    if ( NULL == (music[i] = Mix_LoadMUS_RW(packRW(name), 1)) ) {
       fprintf(stderr, "Couldn't load: %s\n", name);
       useAudio = 0;
       return;
@@ -83,7 +84,7 @@ static void loadSounds() {
   for ( i=0 ; i<CHUNK_NUM ; i++ ) {
     strcpy(name, "sounds/");
     strcat(name, chunkFileName[i]);
-    if ( NULL == (chunk[i] = Mix_LoadWAV(name)) ) {
+    if ( NULL == (chunk[i] = Mix_LoadWAV_RW(packRW(name), 1)) ) {
       fprintf(stderr, "Couldn't load: %s\n", name);
       useAudio = 0;
       return;

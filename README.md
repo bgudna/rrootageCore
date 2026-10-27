@@ -87,6 +87,8 @@ These options are available:
 
 ### How to build
 
+`make` builds both `bin/rr` and the asset pack `bin/rr.dat`. Keep the two files in the same directory (on Windows, also put the SDL2 DLLs there). The game can then be started from any directory.
+
 #### Windows
 
 1. Install [MSYS2](http://www.msys2.org/).
@@ -117,7 +119,7 @@ These options are available:
 
 1. Build [libBulletML 0.0.6](http://shinh.skr.jp/libbulletml/index_en.html) for macOS and save the archive as `src/libbulletml_macos.a` (the bundled `libbulletml.a` is a Windows archive).
 
-1. In the src directory, run `make -f Makefile.macos`, then run `./bin/rr` from the repository root.
+1. In the src directory, run `make -f Makefile.macos`, then run `./bin/rr`.
 
 #### Linux
 
@@ -125,7 +127,7 @@ These options are available:
 
 1. In the src directory, run `make -f Makefile.linux`. The first run downloads and builds libBulletML 0.0.6.
 
-1. Run `./bin/rr` from the repository root.
+1. Run `./bin/rr`.
 
 If you want to build rRootage in Visual Studio, you can use [the cmake branch](https://github.com/abagames/rrootage/tree/cmake). Details are given in [PR #8](https://github.com/abagames/rrootage/pull/8).
 
@@ -150,6 +152,8 @@ If you want to build rRootage in Visual Studio, you can use [the cmake branch](h
 - Update to SDL2
 - Add macOS and Linux builds.
 - Add WASD movement and Space to shoot.
+- Pack the assets into `bin/rr.dat`; the game can now be started from any directory.
+- Save the high scores to the per-user preference directory.
 - Add Ctrl/CMD + q to quit.
 - Add Ctrl/CMD + 1 to reset the window size.
 - Add Enter to start a stage and Tab to change the game mode on the title screen.

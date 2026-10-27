@@ -3,3 +3,5 @@ stdout.txt
 *.o
 .DS_Store
 bin/
+src/packer
+src/packer.exe

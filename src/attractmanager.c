@@ -35,6 +35,21 @@ int mode;
 static HiScore hiScore;
 
 #define PREF_FILE "rr.prf"
+
+// Path of the preference file in the per-user directory.
+static const char *getPrefFilePath() {
+  static char path[1024] = "";
+  if ( path[0] == 0 ) {
+    char *dir = SDL_GetPrefPath("abagames", "rrootage");
+    if ( dir != NULL ) {
+      snprintf(path, sizeof(path), "%s%s", dir, PREF_FILE);
+      SDL_free(dir);
+    } else {
+      snprintf(path, sizeof(path), "%s", PREF_FILE);
+    }
+  }
+  return path;
+}
 #define DEFAULT_HISCORE 100000
 
 static void initHiScore() {
@@ -62,7 +77,7 @@ void loadPreference() {
   FILE *fp;
   int i, j;
   int version;
-  if ( NULL == (fp = fopen(PREF_FILE,"rb")) ) {
+  if ( NULL == (fp = fopen(getPrefFilePath(),"rb")) ) {
     initHiScore();
     return;
   }
@@ -86,7 +101,7 @@ void loadPreference() {
 void savePreference() {
   FILE *fp;
   int i, j;
-  if ( NULL == (fp = fopen(PREF_FILE,"wb")) ) return;
+  if ( NULL == (fp = fopen(getPrefFilePath(),"wb")) ) return;
   putw(VERSION_NUM, fp);
   for ( j=0 ; j<MODE_NUM ; j++ ) {
     for ( i=0 ; i<STAGE_NUM ; i++ ) {
