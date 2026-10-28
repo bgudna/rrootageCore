@@ -14,6 +14,7 @@
 
 #include "SDL.h"
 #include "pack.h"
+#include "postfx.h"
 
 #include <math.h>
 #include <string.h>
@@ -48,6 +49,7 @@ static void screenResized() {
   int offsetX = (screenWidth - viewportWidth) / 2;
   int offsetY = (screenHeight - viewportHeight) / 2;
   glViewport(offsetX, offsetY, viewportWidth, viewportHeight);
+  postfxResize(screenWidth, screenHeight, offsetX, offsetY, viewportWidth, viewportHeight);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.0f, (GLfloat)viewportWidth/(GLfloat)viewportHeight, 0.1f, FAR_PLANE);
@@ -76,6 +78,7 @@ static void initGL() {
   glDisable(GL_TEXTURE_2D);
   glDisable(GL_COLOR_MATERIAL);
 
+  postfxInit();
   resized(screenWidth, screenHeight);
 }
 
@@ -180,6 +183,7 @@ void initSDL() {
 }
 
 void closeSDL() {
+  postfxClose();
   if ( glContext != NULL ) {
     SDL_GL_DeleteContext(glContext);
     glContext = NULL;
@@ -266,6 +270,7 @@ void moveScreenShake() {
 }
 
 void drawGLSceneStart() {
+  postfxBegin();
   glClear(GL_COLOR_BUFFER_BIT);
   setEyepos();
 }
@@ -275,6 +280,7 @@ void drawGLSceneEnd() {
 }
 
 void swapGLScene() {
+  postfxEnd();
   SDL_GL_SwapWindow(window);
 }
 
@@ -854,7 +860,9 @@ void startDrawBoards() {
 
 void endDrawBoards() {
   glPopMatrix();
-  screenResized();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
 }
 
 static void drawBoard(int x, int y, int width, int height) {

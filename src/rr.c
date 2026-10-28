@@ -30,6 +30,7 @@
 #include "soundmanager.h"
 #include "attractmanager.h"
 #include "pack.h"
+#include "postfx.h"
 
 static int noSound = 0;
 
@@ -283,6 +284,10 @@ int main(int argc, char *argv[]) {
         // Cmd/Ctrl+2 to double window size
         if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_2 ) {
           doubleWindowSize();
+        }
+        // Cmd/Ctrl+B to toggle the bloom/trail effects
+        if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_B ) {
+          postfxToggle();
         }
         // Cmd/Ctrl+F for fullscreen
         if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_F ) {

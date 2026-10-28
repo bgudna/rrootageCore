@@ -16,6 +16,7 @@ Shootem up game, 'rRootage'.
 - Special [X] / Trigger 2, Trigger 3
 - Pause [P] / Trigger 5,6,7,8,9
 - Quit [Esc] / Ctrl/CMD + q
+- Ctrl/CMD + b / Toggle the bloom and trail effects
 - Ctrl/CMD + 1 / Reset the window size
 - Ctrl/CMD + 2 / Double the window size
 - Ctrl/CMD + f / Go full screen
@@ -154,6 +155,7 @@ If you want to build rRootage in Visual Studio, you can use [the cmake branch](h
 - Add WASD movement and Space to shoot.
 - Pack the assets into `bin/rr.dat`; the game can now be started from any directory.
 - Save the high scores to the per-user preference directory.
+- Add shader effects (bloom and fading trails); they fall back to the old rendering if shaders aren't supported.
 - Add Ctrl/CMD + q to quit.
 - Add Ctrl/CMD + 1 to reset the window size.
 - Add Enter to start a stage and Tab to change the game mode on the title screen.
