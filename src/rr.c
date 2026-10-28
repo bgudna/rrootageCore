@@ -138,10 +138,23 @@ static void move() {
   moveScreenShake();
 }
 
+// Flat shadows of the boss, ship, shots and bullets on the ground.
+static void drawShadows(int withShip) {
+  if ( !startShadowPass() ) return;
+  drawBoss();
+  if ( withShip ) {
+    drawShots();
+    drawShip();
+  }
+  drawBullets();
+  endShadowPass();
+}
+
 static void draw() {
   switch ( status ) {
   case TITLE:
     drawBackground();
+    drawShadows(0);
     drawBoss();
     drawBulletsWake();
     drawBullets();
@@ -153,6 +166,7 @@ static void draw() {
   case IN_GAME:
   case STAGE_CLEAR:
     drawBackground();
+    drawShadows(1);
     drawBoss();
     drawLasers();
     drawShots();
@@ -167,6 +181,7 @@ static void draw() {
     break;
   case GAMEOVER:
     drawBackground();
+    drawShadows(0);
     drawBoss();
     drawBulletsWake();
     drawFrags();
@@ -178,6 +193,7 @@ static void draw() {
     break;
   case PAUSE:
     drawBackground();
+    drawShadows(1);
     drawBoss();
     drawLasers();
     drawShots();
@@ -288,6 +304,10 @@ int main(int argc, char *argv[]) {
         // Cmd/Ctrl+B to toggle the bloom/trail effects
         if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_B ) {
           postfxToggle();
+        }
+        // Cmd/Ctrl+T to toggle the tilted (pseudo 3D) view
+        if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_T ) {
+          toggleTilt();
         }
         // Cmd/Ctrl+F for fullscreen
         if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_F ) {

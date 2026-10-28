@@ -51,6 +51,13 @@ void initSDL();
 void closeSDL();
 void toggleFullscreen();
 void doubleWindowSize();
+void toggleTilt();
+float getHover();
+int startShadowPass();
+void endShadowPass();
+float getGroundZ(float z);
+void drawGroundLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat z,
+		    int r, int g, int b, int a, int d1);
 void resetWindowSize();
 void resized(int, int);
 void drawGLSceneStart();

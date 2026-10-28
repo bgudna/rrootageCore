@@ -27,6 +27,18 @@
 #include "letterrender.h"
 #include "boss_mtd.h"
 
+// While drawing ground shadows every colour becomes a translucent black.
+#define SHADOW_ALPHA 0.45f
+static int shadowPass = 0;
+static void setColor(GLubyte r, GLubyte g, GLubyte b, GLubyte a) {
+  if ( shadowPass ) {
+    (glColor4ub)(0, 0, 0, (GLubyte)(a*SHADOW_ALPHA));
+  } else {
+    (glColor4ub)(r, g, b, a);
+  }
+}
+#define glColor4ub setColor
+
 #define FAR_PLANE 720
 
 #define SCREEN_WIDTH 640
@@ -239,8 +251,32 @@ float zoom = 15;
 static int screenShakeCnt = 0;
 static int screenShakeType = 0;
 
+// Tilted camera: the playfield is viewed from TILT_ANGLE degrees off vertical.
+// The camera is also pulled back so the field still fits between the side boards.
+#define TILT_ANGLE 45.0f
+#define TILT_DISTANCE 20.0f
+#define TILT_TARGET_Y 1.0f
+#define TILT_SPEED 0.04f
+static int tilted = 1;
+static float tiltRate = 1.0f; // 0 = top-down, 1 = fully tilted
+
+void toggleTilt() {
+  tilted = !tilted;
+}
+
 static void setEyepos() {
   float x, y;
+  float angle, dist, ty;
+  if ( tilted && tiltRate < 1.0f ) {
+    tiltRate += TILT_SPEED;
+    if ( tiltRate > 1.0f ) tiltRate = 1.0f;
+  } else if ( !tilted && tiltRate > 0.0f ) {
+    tiltRate -= TILT_SPEED;
+    if ( tiltRate < 0.0f ) tiltRate = 0.0f;
+  }
+  angle = TILT_ANGLE * tiltRate * 3.14159265f / 180.0f;
+  dist = zoom + (TILT_DISTANCE - zoom) * tiltRate;
+  ty = TILT_TARGET_Y * tiltRate;
   glPushMatrix();
   if ( screenShakeCnt > 0 ) {
     switch ( screenShakeType ) {
@@ -253,10 +289,44 @@ static void setEyepos() {
       y = (float)randNS2(256)*screenShakeCnt/21000.0f;
       break;
     }
-    gluLookAt(0, 0, zoom, x, y, 0, 0.0f, 1.0f, 0.0f);
+    gluLookAt(0, ty - dist*sinf(angle), dist*cosf(angle), x, ty + y, 0, 0.0f, 1.0f, 0.0f);
   } else {
-    gluLookAt(0, 0, zoom, 0, 0, 0, 0.0f, 1.0f, 0.0f);
+    gluLookAt(0, ty - dist*sinf(angle), dist*cosf(angle), 0, ty, 0, 0.0f, 1.0f, 0.0f);
   }
+}
+
+// Elements stand upright above the ground and cast a flat shadow on it.
+#define UPRIGHT_HOVER 0.45f
+#define SHADOW_OFFSET_X 0.12f
+#define SHADOW_OFFSET_Y -0.12f
+
+// Height above the ground at which elements hover.
+float getHover() {
+  return UPRIGHT_HOVER * tiltRate;
+}
+
+// Call right after glPushMatrix() instead of glTranslatef(x, y, 0).
+static void placeUpright(GLfloat x, GLfloat y) {
+  if ( shadowPass ) {
+    glTranslatef(x + SHADOW_OFFSET_X*tiltRate, y + SHADOW_OFFSET_Y*tiltRate, 0);
+  } else {
+    glTranslatef(x, y, UPRIGHT_HOVER*tiltRate);
+    glRotatef(TILT_ANGLE*tiltRate, 1, 0, 0);
+  }
+}
+
+// Draw the shadow-casting elements between startShadowPass() and endShadowPass().
+// Returns 0 if there are no shadows to draw (top-down view).
+int startShadowPass() {
+  if ( tiltRate < 0.05f ) return 0;
+  shadowPass = 1;
+  glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
+  return 1;
+}
+
+void endShadowPass() {
+  shadowPass = 0;
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 }
 
 void setScreenShake(int type, int cnt) {
@@ -305,8 +375,53 @@ void drawBox(GLfloat x, GLfloat y, GLfloat width, GLfloat height,
   glPopMatrix();
 }
 
+// Background grid line lying on the ground. It fades out towards the far end (and the
+// far sides) of the view. Lines are split so the fade is smooth along them.
+#define GROUND_FADE_SEG 24
+#define GROUND_FADE_Y_START 4.0f
+#define GROUND_FADE_Y_END 24.0f
+#define GROUND_FADE_X_START 8.0f
+#define GROUND_FADE_X_END 26.0f
+
+static float groundFade(float x, float y) {
+  // Without the tilt the whole visible area stays bright.
+  float far = 200.0f * (1.0f - tiltRate);
+  float fy = 1.0f - (y - GROUND_FADE_Y_START - far) / (GROUND_FADE_Y_END - GROUND_FADE_Y_START);
+  float ax = x < 0 ? -x : x;
+  float fx = 1.0f - (ax - GROUND_FADE_X_START - far) / (GROUND_FADE_X_END - GROUND_FADE_X_START);
+  if ( fy > 1.0f ) fy = 1.0f;
+  if ( fx > 1.0f ) fx = 1.0f;
+  if ( fy < 0.0f ) fy = 0.0f;
+  if ( fx < 0.0f ) fx = 0.0f;
+  return fy * fx;
+}
+
+void drawGroundLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat z,
+		    int r, int g, int b, int a, int d1) {
+  int i;
+  float t, x, y;
+  glPushMatrix();
+  glRotatef((float)d1*360/1024, 0, 0, 1);
+  glBegin(GL_LINE_STRIP);
+  for ( i=0 ; i<=GROUND_FADE_SEG ; i++ ) {
+    t = (float)i / GROUND_FADE_SEG;
+    x = x1 + (x2-x1)*t;
+    y = y1 + (y2-y1)*t;
+    glColor4ub(r, g, b, (int)(a * groundFade(x, y)));
+    glVertex3f(x, y, z);
+  }
+  glEnd();
+  glPopMatrix();
+}
+
+float getGroundZ(float z) {
+  // The grid sinks to its original depth when the view is top-down.
+  return z * (1.0f - tiltRate);
+}
+
 void drawLine(GLfloat x1, GLfloat y1, GLfloat z1,
 	      GLfloat x2, GLfloat y2, GLfloat z2, int r, int g, int b, int a) {
+  if ( shadowPass ) return;
   glColor4ub(r, g, b, a);
   glBegin(GL_LINES);
   glVertex3f(x1, y1, z1);
@@ -316,6 +431,7 @@ void drawLine(GLfloat x1, GLfloat y1, GLfloat z1,
 
 void drawLinePart(GLfloat x1, GLfloat y1, GLfloat z1,
 		  GLfloat x2, GLfloat y2, GLfloat z2, int r, int g, int b, int a, int len) {
+  if ( shadowPass ) return;
   glColor4ub(r, g, b, a);
   glBegin(GL_LINES);
   glVertex3f(x1, y1, z1);
@@ -364,6 +480,7 @@ void drawSquare(GLfloat x1, GLfloat y1, GLfloat z1,
 }
 
 void drawStar(int f, GLfloat x, GLfloat y, GLfloat z, int r, int g, int b, float size) {
+  if ( shadowPass ) return;
   glEnable(GL_TEXTURE_2D);
   if ( f ) {
     glBindTexture(GL_TEXTURE_2D, starTexture);
@@ -372,7 +489,8 @@ void drawStar(int f, GLfloat x, GLfloat y, GLfloat z, int r, int g, int b, float
   }
   glColor4ub(r, g, b, 255);
   glPushMatrix();
-  glTranslatef(x, y, z);
+  glTranslatef(x, y, z + getHover());
+  glRotatef(TILT_ANGLE*tiltRate, 1, 0, 0);
   glRotatef(rand()%360, 0.0f, 0.0f, 1.0f);
   glBegin(GL_TRIANGLE_FAN);
   glTexCoord2f(0.0f, 1.0f); 
@@ -395,6 +513,7 @@ void drawStar(int f, GLfloat x, GLfloat y, GLfloat z, int r, int g, int b, float
 
 void drawLaser(GLfloat x, GLfloat y, GLfloat width, GLfloat height,
 	       int cc1, int cc2, int cc3, int cc4, int cnt, int type) {
+  if ( shadowPass ) return;
   int i, d;
   float gx, gy;
   glBegin(GL_TRIANGLE_FAN);
@@ -484,7 +603,7 @@ void drawCore(GLfloat x, GLfloat y, int cnt, int r, int g, int b) {
   int i;
   float cy;
   glPushMatrix();
-  glTranslatef(x, y, 0);
+  placeUpright(x, y);
   glColor4ub(r, g, b, 255);
   glBegin(GL_TRIANGLE_FAN);
   glVertex3f(-SHAPE_POINT_SIZE_L, -SHAPE_POINT_SIZE_L,  0);
@@ -492,11 +611,11 @@ void drawCore(GLfloat x, GLfloat y, int cnt, int r, int g, int b) {
   glVertex3f( SHAPE_POINT_SIZE_L,  SHAPE_POINT_SIZE_L,  0);
   glVertex3f(-SHAPE_POINT_SIZE_L,  SHAPE_POINT_SIZE_L,  0);
   glEnd();
-  glPopMatrix();
-  cy = y - CORE_HEIGHT*2.5f;
+  cy = -CORE_HEIGHT*2.5f;
   for ( i=0 ; i<4 ; i++, cy+=CORE_HEIGHT ) {
-    drawRing(x, cy, (cnt*(4+i))&1023, (sctbl[(cnt*(5+i))&1023]/4)&1023, r, g, b);
+    drawRing(0, cy, (cnt*(4+i))&1023, (sctbl[(cnt*(5+i))&1023]/4)&1023, r, g, b);
   }
+  glPopMatrix();
 }
 
 #define SHIP_DRUM_R 0.4f
@@ -506,7 +625,7 @@ void drawCore(GLfloat x, GLfloat y, int cnt, int r, int g, int b) {
 void drawShipShape(GLfloat x, GLfloat y, float d, int inv) {
   int i;
   glPushMatrix();
-  glTranslatef(x, y, 0);
+  placeUpright(x, y);
   glColor4ub(255, 100, 100, 255);
   glBegin(GL_TRIANGLE_FAN);
   glVertex3f(-SHAPE_POINT_SIZE_L, -SHAPE_POINT_SIZE_L,  0);
@@ -538,6 +657,7 @@ void drawShipShape(GLfloat x, GLfloat y, float d, int inv) {
 }
 
 void drawBomb(GLfloat x, GLfloat y, GLfloat width, int cnt) {
+  if ( shadowPass ) return;
   int i, d, od, c;
   GLfloat x1, y1, x2, y2;
   d = cnt*48; d &= 1023;
@@ -556,6 +676,7 @@ void drawBomb(GLfloat x, GLfloat y, GLfloat width, int cnt) {
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat width, int cnt, 
 		int r1, int g1, int b1, int r2, int b2, int g2) {
+  if ( shadowPass ) return;
   int i, d;
   GLfloat x1, y1, x2, y2;
   if ( (cnt&1) == 0 ) { 
@@ -584,7 +705,7 @@ void drawShape(GLfloat x, GLfloat y, GLfloat size, int d, int cnt, int type,
 	       int r, int g, int b) {
   GLfloat sz, sz2;
   glPushMatrix();
-  glTranslatef(x, y, 0);
+  placeUpright(x, y);
   glColor4ub(r, g, b, 255);
   glBegin(GL_TRIANGLE_FAN);
   glVertex3f(-SHAPE_POINT_SIZE, -SHAPE_POINT_SIZE,  0);
@@ -753,7 +874,7 @@ static int ikaClr[2][3][3] = {
 void drawShapeIka(GLfloat x, GLfloat y, GLfloat size, int d, int cnt, int type, int c) {
   GLfloat sz, sz2, sz3;
   glPushMatrix();
-  glTranslatef(x, y, 0);
+  placeUpright(x, y);
   glColor4ub(ikaClr[c][0][0], ikaClr[c][0][1], ikaClr[c][0][2], 255);
   glDisable(GL_BLEND);
   glBegin(GL_TRIANGLE_FAN);
@@ -825,7 +946,7 @@ static int shtClr[3][3][3] = {
 
 void drawShot(GLfloat x, GLfloat y, GLfloat d, int c, float width, float height) {
   glPushMatrix();
-  glTranslatef(x, y, 0);
+  placeUpright(x, y);
   glRotatef(d, 0, 0, 1);
   glColor4ub(shtClr[c][0][0], shtClr[c][0][1], shtClr[c][0][2], 240);
   glDisable(GL_BLEND);

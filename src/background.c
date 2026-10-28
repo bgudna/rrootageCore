@@ -18,6 +18,8 @@
 static Plane plane[PLANE_MAX];
 static int planeNum;
 
+static void fixScrollSpeed();
+
 void initBackground(int s) {
   int i;
   Plane *pl;
@@ -149,6 +151,17 @@ void initBackground(int s) {
     }
     break;
   }
+  fixScrollSpeed();
+}
+
+// Make sure every layer scrolls towards the player.
+#define MIN_SCROLL_SPEED 0.04f
+
+static void fixScrollSpeed() {
+  int i;
+  for ( i=0 ; i<planeNum ; i++ ) {
+    if ( plane[i].my < MIN_SCROLL_SPEED ) plane[i].my = MIN_SCROLL_SPEED;
+  }
 }
 
 void moveBackground() {
@@ -165,21 +178,29 @@ void moveBackground() {
   }
 }
 
+// The grid is drawn over the whole visible ground, up to where it fades out in the distance.
+#define GROUND_X 28.0f
+#define GROUND_Y_NEAR -12.0f
+#define GROUND_Y_FAR 30.0f
+
 void drawBackground() {
-  int lx, ly, i;
-  float x, y;
+  int k, kmin, kmax;
+  float x, y, z;
   Plane *pl;
+  int i;
   for ( i=0 ; i<planeNum ; i++ ) {
     pl = &(plane[i]);
-    x = pl->x+pl->ox;
-    for ( lx=0 ; lx<pl->xn ; lx++, x+=pl->width ) {
-      drawRollLineAbs(x, pl->y+pl->oy, pl->z, x, pl->y+pl->oy+pl->height*pl->yn, pl->z,
-		      pl->r, pl->g, pl->b, pl->a, pl->d1);
+    z = getGroundZ(pl->z);
+    kmax = (int)(GROUND_X/pl->width) + 1;
+    for ( k=-kmax ; k<=kmax ; k++ ) {
+      x = pl->ox + k*pl->width;
+      drawGroundLine(x, GROUND_Y_NEAR, x, GROUND_Y_FAR, z, pl->r, pl->g, pl->b, pl->a, pl->d1);
     }
-    y = pl->y + pl->oy;
-    for ( ly=0 ; ly<pl->yn ; ly++, y+=pl->height ) {
-      drawRollLineAbs(pl->x+pl->ox, y, pl->z, pl->x+pl->ox+pl->width*pl->xn, y, pl->z,
-		      pl->r, pl->g, pl->b, pl->a, pl->d1);
+    kmin = (int)(GROUND_Y_NEAR/pl->height) - 1;
+    kmax = (int)(GROUND_Y_FAR/pl->height) + 1;
+    for ( k=kmin ; k<=kmax ; k++ ) {
+      y = pl->oy + k*pl->height;
+      drawGroundLine(-GROUND_X, y, GROUND_X, y, z, pl->r, pl->g, pl->b, pl->a, pl->d1);
     }
   }
 }
