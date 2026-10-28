@@ -16,8 +16,8 @@ Shootem up game, 'rRootage'.
 - Special [X] / Trigger 2, Trigger 3
 - Pause [P] / Trigger 5,6,7,8,9
 - Quit [Esc] / Ctrl/CMD + q
-- Ctrl/CMD + t / Toggle the tilted (pseudo 3D) view
-- Ctrl/CMD + b / Toggle the bloom and trail effects
+- Ctrl/CMD + t / Toggle the tilted (pseudo 3D) view (off by default)
+- Ctrl/CMD + b / Toggle the bloom and trail effects (off by default)
 - Ctrl/CMD + 1 / Reset the window size
 - Ctrl/CMD + 2 / Double the window size
 - Ctrl/CMD + f / Go full screen

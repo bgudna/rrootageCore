@@ -257,8 +257,8 @@ static int screenShakeType = 0;
 #define TILT_DISTANCE 20.0f
 #define TILT_TARGET_Y 1.0f
 #define TILT_SPEED 0.04f
-static int tilted = 1;
-static float tiltRate = 1.0f; // 0 = top-down, 1 = fully tilted
+static int tilted = 0;       // Off at startup; Ctrl/Cmd+T turns it on.
+static float tiltRate = 0.0f; // 0 = top-down, 1 = fully tilted
 
 void toggleTilt() {
   tilted = !tilted;

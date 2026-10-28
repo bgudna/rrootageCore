@@ -226,7 +226,7 @@ static Target target[TARGET_NUM];
 
 static GLuint progTrail, progBright, progBlur, progComposite;
 static int available = 0;   // Shaders and FBOs work.
-static int enabled = 1;     // The user hasn't turned the effects off.
+static int enabled = 0;     // Off at startup; Ctrl/Cmd+B turns it on.
 static int active = 0;      // postfxBegin() has been called for this frame.
 static int targetsReady = 0;
 static int trailCur = 0;
@@ -272,7 +272,7 @@ int postfxInit(void) {
     return 0;
   }
   available = 1;
-  if ( viewW > 0 && !createTargets() ) {
+  if ( enabled && viewW > 0 && !createTargets() ) {
     fprintf(stderr, "Unable to create framebuffers: effects disabled.\n");
     destroyTargets();
     available = 0;
@@ -295,7 +295,7 @@ void postfxResize(int windowW, int windowH, int vx, int vy, int vw, int vh) {
   winW = windowW; winH = windowH;
   viewX = vx; viewY = vy; viewW = vw; viewH = vh;
   // Keep the buffers (and the trails in them) unless the size changed.
-  if ( available && (sizeChanged || !targetsReady) && !createTargets() ) {
+  if ( available && enabled && (sizeChanged || !targetsReady) && !createTargets() ) {
     fprintf(stderr, "Unable to create framebuffers: effects disabled.\n");
     destroyTargets();
     available = 0;
