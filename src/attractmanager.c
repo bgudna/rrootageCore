@@ -455,6 +455,30 @@ void drawPause() {
   }
 }
 
+// Key help screen (toggled with F1). The font only has letters, digits, '.', '-' and '+'.
+void drawHelp() {
+  static char *lines[][2] = {
+    {"MOVE", "ARROWS OR WASD"},
+    {"LASER", "Z OR SPACE"},
+    {"SPECIAL", "X"},
+    {"PAUSE", "P"},
+    {"QUIT", "ESC OR CTRL+Q"},
+    {"TITLE START", "ENTER OR LASER KEY"},
+    {"TITLE MODE", "TAB OR SPECIAL KEY"},
+    {"WINDOW SIZE", "CTRL+1 RESET  CTRL+2 DOUBLE"},
+    {"FULLSCREEN", "CTRL+F"},
+  };
+  int n = sizeof(lines)/sizeof(lines[0]);
+  int i, y = 110;
+  drawString("KEYS", 270, 50, 20, 0, 200, 200, 220);
+  for ( i=0 ; i<n ; i++, y+=34 ) {
+    drawString(lines[i][0], 60, y, 9, 0, 150, 150, 220);
+    drawString(lines[i][1], 250, y, 9, 0, 210, 210, 240);
+  }
+  drawString("CMD INSTEAD OF CTRL ON MAC", 60, y+10, 8, 0, 130, 130, 170);
+  drawString("F1 TO CLOSE", 220, 450, 10, 0, 200, 200, 180);
+}
+
 static int bsCnt, bossScore, bsAdd;
 
 void initBossScoreAtr(int bs) {

@@ -16,6 +16,7 @@ Shootem up game, 'rRootage'.
 - Special [X] / Trigger 2, Trigger 3
 - Pause [P] / Trigger 5,6,7,8,9
 - Quit [Esc] / Ctrl/CMD + q
+- [F1] / Show or hide the key help screen
 - Ctrl/CMD + 1 / Reset the window size
 - Ctrl/CMD + 2 / Double the window size
 - Ctrl/CMD + f / Go full screen

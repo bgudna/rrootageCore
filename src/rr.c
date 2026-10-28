@@ -137,7 +137,17 @@ static void move() {
   moveScreenShake();
 }
 
+// F1 toggles the key help screen. The game is frozen while it is shown.
+static int helpVisible = 0;
+
 static void draw() {
+  if ( helpVisible ) {
+    startDrawBoards();
+    drawSideBoards();
+    drawHelp();
+    endDrawBoards();
+    return;
+  }
   switch ( status ) {
   case TITLE:
     drawBackground();
@@ -276,6 +286,10 @@ int main(int argc, char *argv[]) {
 #else
         modKey = KMOD_CTRL;
 #endif
+        // F1 to show/hide the key help
+        if ( event.key.keysym.scancode == SDL_SCANCODE_F1 && !event.key.repeat ) {
+          helpVisible = !helpVisible;
+        }
         // Cmd/Ctrl+1 to restore the initial window size
         if ( (event.key.keysym.mod & modKey) && event.key.keysym.scancode == SDL_SCANCODE_1 ) {
           resetWindowSize();
@@ -295,7 +309,7 @@ int main(int argc, char *argv[]) {
     if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) done = 1;
     if ( keys[SDL_SCANCODE_Q] == SDL_PRESSED && (SDL_GetModState() & QUIT_MOD) ) done = 1;
     if ( buttons & PAD_BUTTONP ) {
-      if ( !pPrsd ) {
+      if ( !pPrsd && !helpVisible ) {
 	if ( status == IN_GAME ) {
 	  status = PAUSE;
 	} else if ( status == PAUSE ) {
@@ -323,9 +337,11 @@ int main(int argc, char *argv[]) {
     } else {
       prvTickCount += frame*interval;
     }
-    for ( i=0 ; i<frame ; i++ ) {
-      move();
-      tick++;
+    if ( !helpVisible ) {
+      for ( i=0 ; i<frame ; i++ ) {
+        move();
+        tick++;
+      }
     }
 
     drawGLSceneStart();

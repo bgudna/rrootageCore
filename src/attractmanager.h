@@ -54,6 +54,7 @@ void drawGameover();
 void moveTitleMenu();
 void movePause();
 void drawPause();
+void drawHelp();
 void drawTitle();
 void initBossScoreAtr(int bs);
 void moveBossScoreAtr();
