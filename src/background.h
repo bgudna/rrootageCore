@@ -22,3 +22,4 @@ typedef struct {
 void initBackground(int s);
 void moveBackground();
 void drawBackground();
+void pulseBackground();

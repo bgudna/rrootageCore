@@ -18,6 +18,7 @@
 #define PLANE_MAX 4
 
 static void initPath();
+static float bgPulse = 0;
 
 static Plane plane[PLANE_MAX];
 static int planeNum;
@@ -26,6 +27,7 @@ void initBackground(int s) {
   int i;
   Plane *pl;
   initPath();
+  bgPulse = 0;
   switch ( s ) {
   case 0:
     planeNum = 3;
@@ -180,6 +182,17 @@ static float pathX[PATH_N], pathY[PATH_N];
 static float pathVX, pathVY;
 static float pathOfs;
 
+// Brightness pulse, kicked each time the player damages the boss.
+#define PULSE_KICK 0.35f
+#define PULSE_DECAY 0.88f
+#define PULSE_ALPHA_GAIN 1.0f
+#define PULSE_COLOR_GAIN 0.5f
+
+void pulseBackground() {
+  bgPulse += PULSE_KICK;
+  if ( bgPulse > 1.0f ) bgPulse = 1.0f;
+}
+
 static void appendPathPoint(float *x, float *y) {
   pathVX = pathVX*0.8f + ((rand()%2001)-1000)/1000.0f*0.9f;
   pathVY = pathVY*0.8f + ((rand()%2001)-1000)/1000.0f*0.9f;
@@ -231,6 +244,8 @@ void moveBackground() {
   int i;
   Plane *pl;
   movePath();
+  bgPulse *= PULSE_DECAY;
+  if ( bgPulse < 0.01f ) bgPulse = 0;
   for ( i=0 ; i<planeNum ; i++ ) {
     pl = &(plane[i]);
     pl->ox -= pl->mx;
@@ -243,8 +258,15 @@ void moveBackground() {
 }
 
 static int fadeAlpha(int a, float t) {
-  int v = (int)(a * ALPHA_BOOST * (1.0f - t*t));
+  int v = (int)(a * ALPHA_BOOST * (1.0f - t*t) * (1.0f + PULSE_ALPHA_GAIN*bgPulse));
   return v > 255 ? 255 : (v < 0 ? 0 : v);
+}
+
+// Set the drawing colour, pushing it toward white while pulsing.
+static void setPulseColor(Plane *pl, int alpha) {
+  float p = bgPulse * PULSE_COLOR_GAIN;
+  glColor4ub((int)(pl->r + (255-pl->r)*p), (int)(pl->g + (255-pl->g)*p),
+	     (int)(pl->b + (255-pl->b)*p), alpha);
 }
 
 void drawBackground() {
@@ -266,7 +288,7 @@ void drawBackground() {
       for ( n=0 ; n<=LINE_STEPS ; n++ ) {
 	depth = total * n / LINE_STEPS;
 	pathAt(depth, &cx, &cy);
-	glColor4ub(pl->r, pl->g, pl->b, fadeAlpha(pl->a, (float)n/LINE_STEPS));
+	setPulseColor(pl, fadeAlpha(pl->a, (float)n/LINE_STEPS));
 	glVertex3f(TUNNEL_RADIUS*cosf(ang) + cx - bx,
 		   TUNNEL_RADIUS*sinf(ang) + cy - by,
 		   TUNNEL_FRONT_Z - depth);
@@ -277,7 +299,7 @@ void drawBackground() {
     for ( k=0 ; k<rings ; k++ ) {
       depth = k*pl->height + pl->oy;
       pathAt(depth, &cx, &cy);
-      glColor4ub(pl->r, pl->g, pl->b, fadeAlpha(pl->a, depth/total));
+      setPulseColor(pl, fadeAlpha(pl->a, depth/total));
       glBegin(GL_LINE_LOOP);
       for ( s=0 ; s<segs ; s++ ) {
 	ang = off + TWO_PI*s/segs;
