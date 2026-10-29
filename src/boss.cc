@@ -20,6 +20,7 @@ extern "C" {
 #include "soundmanager.h"
 #include "letterrender.h"
 #include "attractmanager.h"
+#include "background.h"
 #include "rr.h"
 }
 #include "boss.h"
@@ -795,6 +796,7 @@ void damageBoss(int dmg) {
   }
   boss.shield -= dmg;
   boss.damaged = 1;
+  pulseBackground();
   switch ( boss.state ) {
   case ATTACKING:
     if ( boss.shield <= boss.patternChangeShield ) {
