@@ -102,7 +102,7 @@ These options are available:
    $ pacman -S base-devel mingw-w64-i686-toolchain
    ```
 
-1. Install SDL2 and SDL2_mixer for MinGW (e.g. `pacman -S mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_mixer`).
+1. Install SDL2, SDL2_mixer and libopenmpt for MinGW (e.g. `pacman -S mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_mixer mingw-w64-i686-libopenmpt`).
 
 1. Clone or download this repository.
 
@@ -116,7 +116,7 @@ These options are available:
 
 #### macOS
 
-1. Install the Xcode command line tools and SDL2: `brew install sdl2 sdl2_mixer`.
+1. Install the Xcode command line tools and the dependencies: `brew install sdl2 sdl2_mixer libopenmpt pkgconf`.
 
 1. Build [libBulletML 0.0.6](http://shinh.skr.jp/libbulletml/index_en.html) for macOS and save the archive as `src/libbulletml_macos.a` (the bundled `libbulletml.a` is a Windows archive).
 
@@ -124,13 +124,20 @@ These options are available:
 
 #### Linux
 
-1. Install the dependencies (Debian/Ubuntu shown): `sudo apt install build-essential curl bzip2 libsdl2-dev libsdl2-mixer-dev libglu1-mesa-dev`.
+1. Install the dependencies (Debian/Ubuntu shown): `sudo apt install build-essential curl bzip2 pkg-config libsdl2-dev libsdl2-mixer-dev libopenmpt-dev libglu1-mesa-dev`.
 
 1. In the src directory, run `make -f Makefile.linux`. The first run downloads and builds libBulletML 0.0.6.
 
 1. Run `./bin/rr`.
 
 If you want to build rRootage in Visual Studio, you can use [the cmake branch](https://github.com/abagames/rrootage/tree/cmake). Details are given in [PR #8](https://github.com/abagames/rrootage/pull/8).
+
+### Music
+
+The BGM is played from tracker modules by libopenmpt. Put the modules in `sounds/` as
+`stg_a`, `stg_b` and `stg_c` with one of the extensions `.it`, `.xm`, `.s3m`, `.mod` or `.mptm`
+(the formats are detected from the file contents), then run `make` to rebuild `bin/rr.dat`.
+Modules loop forever. A missing module just means that stage has no music.
 
 ### Webpage
 
@@ -142,7 +149,9 @@ If you want to build rRootage in Visual Studio, you can use [the cmake branch](h
 
 [Simple DirectMedia Layer](http://www.libsdl.org/) is used for the display handling.
 
-[SDL_mixer](http://www.libsdl.org/projects/SDL_mixer/) and [Ogg Vorbis CODEC](http://www.vorbis.com/) to play BGM/SE.
+[SDL_mixer](http://www.libsdl.org/projects/SDL_mixer/) to play the sound effects.
+
+[libopenmpt](https://lib.openmpt.org/libopenmpt/) to play the BGM (tracker modules).
 
 [Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html) to create the random number.
 

@@ -2,7 +2,7 @@
  * Builds the rr.dat asset pack (see pack.c for the format).
  *
  * Usage: packer <output> <dir>...
- * Run from the repository root. Every .bmp/.wav/.ogg/.xml file directly
+ * Run from the repository root. Every .bmp/.wav/.xml/tracker module file directly
  * inside each directory is stored as "<dir>/<file>".
  */
 #include <stdio.h>
@@ -26,7 +26,11 @@ static int hasAssetExt(const char *name) {
   const char *ext = strrchr(name, '.');
   if ( ext == NULL ) return 0;
   return strcmp(ext, ".bmp") == 0 || strcmp(ext, ".wav") == 0 ||
-    strcmp(ext, ".ogg") == 0 || strcmp(ext, ".xml") == 0;
+    strcmp(ext, ".xml") == 0 ||
+    // Tracker modules (music).
+    strcmp(ext, ".it") == 0 || strcmp(ext, ".xm") == 0 ||
+    strcmp(ext, ".s3m") == 0 || strcmp(ext, ".mod") == 0 ||
+    strcmp(ext, ".mptm") == 0;
 }
 
 static void addFile(const char *dir, const char *file) {

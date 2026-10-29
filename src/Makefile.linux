@@ -1,6 +1,6 @@
 # rRootage makefile for Linux
-# Requires SDL2, SDL2_mixer, GLU and a C/C++ toolchain, e.g. on Debian/Ubuntu:
-#   sudo apt install build-essential curl bzip2 libsdl2-dev libsdl2-mixer-dev libglu1-mesa-dev
+# Requires SDL2, SDL2_mixer, libopenmpt, GLU and a C/C++ toolchain, e.g. on Debian/Ubuntu:
+#   sudo apt install build-essential curl bzip2 pkg-config libsdl2-dev libsdl2-mixer-dev libopenmpt-dev libglu1-mesa-dev
 #
 # The bundled libbulletml.a is a Windows archive, so libbulletml is built
 # from source the first time:
@@ -21,8 +21,8 @@ BULLETML_SRC = bulletml_build/bulletml/src
 BULLETML_SRCS = bulletmlparser-tinyxml bulletmlparser bulletmltree calc formula-variables \
 	bulletmlrunner bulletmlrunnerimpl tinyxml/tinyxml tinyxml/tinyxmlparser tinyxml/tinyxmlerror
 
-DEFAULT_CFLAGS = $(shell sdl2-config --cflags)
-LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer -lGLU -lGL
+DEFAULT_CFLAGS = $(shell sdl2-config --cflags) $(shell pkg-config --cflags libopenmpt)
+LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer $(shell pkg-config --libs libopenmpt) -lGLU -lGL
 
 MORE_CFLAGS = -O2 -Wall
 

@@ -1,8 +1,8 @@
 # rRootage makefile for macOS
-# Requires: Xcode command line tools, Homebrew `sdl2` and `sdl2_mixer`.
+# Requires: Xcode command line tools, Homebrew `sdl2`, `sdl2_mixer` and `libopenmpt`.
 # libbulletml is built from source automatically.
 #
-#   brew install sdl2 sdl2_mixer
+#   brew install sdl2 sdl2_mixer libopenmpt pkgconf
 #   make -f Makefile.macos
 
 NAME   = rr
@@ -20,8 +20,11 @@ BULLETML_SRC = bulletml_build/bulletml/src
 BULLETML_SRCS = bulletmlparser-tinyxml bulletmlparser bulletmltree calc formula-variables \
 	bulletmlrunner bulletmlrunnerimpl tinyxml/tinyxml tinyxml/tinyxmlparser tinyxml/tinyxmlerror
 
-DEFAULT_CFLAGS = $(shell sdl2-config --cflags)
-LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer -framework OpenGL
+OPENMPT_CFLAGS := $(shell pkg-config --cflags libopenmpt 2>/dev/null || echo -I/opt/homebrew/include)
+OPENMPT_LIBS   := $(shell pkg-config --libs libopenmpt 2>/dev/null || echo -L/opt/homebrew/lib -lopenmpt)
+
+DEFAULT_CFLAGS = $(shell sdl2-config --cflags) $(OPENMPT_CFLAGS)
+LDFLAGS        = $(BULLETML_LIB) $(shell sdl2-config --libs) -lSDL2_mixer $(OPENMPT_LIBS) -framework OpenGL
 
 MORE_CFLAGS = -O2 -Wall -Wno-deprecated-declarations
 
